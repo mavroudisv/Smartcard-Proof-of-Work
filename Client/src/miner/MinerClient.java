@@ -8,7 +8,7 @@ import javax.smartcardio.CommandAPDU;
 
 public class MinerClient {
     public static byte[] APPLET_AID = {0x55, 0x6e, 0x69, 0x74, 0x54, 0x65, 0x73, 0x74, 0x73};
-    public static boolean PHYSICAL = true;
+    public static boolean PHYSICAL = false;
 
 
     public static void main(String[] args) throws Exception {
