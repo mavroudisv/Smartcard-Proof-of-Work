@@ -12,8 +12,8 @@ import javacard.security.MessageDigest;
 
 public class MinerApplet extends Applet {
     
-    final static byte HASHRATE	= (byte) 0xaa;	
-	final static byte OVERHEAD	= (byte) 0x00;
+	final static byte OVERHEAD	= (byte) 0xaa;
+    final static byte HASHRATE	= (byte) 0xbb;	
 	final static byte ONE 		= (byte) 0x01;
     final static byte TWO	 	= (byte) 0x02;
     final static byte THREE	 	= (byte) 0x03;
@@ -55,12 +55,13 @@ public class MinerApplet extends Applet {
         random.generateData(rnddata, (short)0, (short)32);
 		
 		sha256 = MessageDigest.getInstance(MessageDigest.ALG_SHA_256, false);		
-
 		short counter1 = 0;
 		short counter2 = 0;
 		
-		
 		switch (buffer[ISO7816.OFFSET_INS]) {
+		case OVERHEAD:
+			return;
+
         case HASHRATE:
 			short iterations = Util.makeShort(p1, p2);
 	        for (short i = 0; i < iterations; i++){
@@ -68,9 +69,6 @@ public class MinerApplet extends Applet {
 				sha256.doFinal(rnddata, (short)0, (short)rnddata.length, buffer, (short) 0);
 			}
 			return;
-
-		case OVERHEAD:
-				return;
 
         case ONE:
 			while(true){
@@ -87,11 +85,11 @@ public class MinerApplet extends Applet {
         
 		case TWO:
 			counter2 = (short) 0;
+			Util.arrayCopyNonAtomic(shortToByteArray(counter2), (short) 0, rnddata, (short) 28, (short) 2);
 			while(true){
 				if (counter1 == (short) 32767){
 					counter1 = (short) 0;
 					counter2 = (short)(counter2+1);
-					Util.arrayCopyNonAtomic(shortToByteArray(counter2), (short) 0, rnddata, (short) 28, (short) 2);
 					Util.arrayCopyNonAtomic(shortToByteArray(counter1), (short) 0, rnddata, (short) 30, (short) 2);
 				}else{
 					counter1 = (short)(counter1+1);
